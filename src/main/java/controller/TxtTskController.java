@@ -37,12 +37,14 @@ public class TxtTskController {
     @PostMapping("/txtTskParse")
     public ResponseEntity home(
             @RequestParam("txtUrl") String txtUrl,
-            @RequestParam("tskUrl") String tskUrl) {
+            @RequestParam("tskUrl") String tskUrl,
+            @RequestParam("retTskUrl") String retTskUrl,
+            @RequestParam("slotNo") String slotNo) {
         TSKParse tskData = tskParse.read(tskUrl);
         TxtParse txtData = txtParse.read(txtUrl);
-        txtParse.rotate(180);
+        txtParse.rotate(0);
         tskData.buBian(txtData);
-        tskData.createNewTSK(txtData);
+        tskData.createNewTSK(txtData,retTskUrl,slotNo);
 
 
 
