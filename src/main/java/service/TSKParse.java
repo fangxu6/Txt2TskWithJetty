@@ -5,8 +5,6 @@ import customer.exception.CustomException;
 import model.DieCategory;
 import model.OrientatioFlatAngleEnum;
 import model.WaferMapData;
-import model.subentity.CassetteInformation;
-import model.subentity.TestTotal;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -159,7 +157,6 @@ public class TSKParse {
     public String getEndTime() {
         return String.join("-", "20" + endYear, endMonth, endDay) + " " + String.join(":", endHour, endMinute, "00");
     }
-
 
 
     public Short getOrientationFlatAngle() {
@@ -509,7 +506,6 @@ public class TSKParse {
                 TxtNewMap[i][j] = txtParse.TxtMap[i - tskrowmin][j - tskcolmin];
             }
         }
-        System.out.println(TxtNewMap[2][54]);
 
         if (txtParse.txtNewData == null) {
             txtParse.txtNewData = new ArrayList();
@@ -524,7 +520,6 @@ public class TSKParse {
 
             }
         }
-        System.out.println(txtParse.txtNewData.get(332));
         ///////////////////////////对位点比对工作//////////////////////////////////////////////////
 
         int tskPass = 0;
@@ -532,23 +527,24 @@ public class TSKParse {
         int txtMark = 0;
         for (int i = 0; i < mapDataAreaColSize; i++) {
             for (int j = 0; j < mapDataAreaRowSize; j++) {
-                if (TxtNewMap[i][j].toString() .equals("1")) {
+                if (TxtNewMap[i][j].toString().equals("1")) {
                     tskPass++;
                 }
 
-                if (TxtNewMap[i][j].toString() .equals("X")) {
+                if (TxtNewMap[i][j].toString().equals("X")) {
                     tskFail++;
                 }
 
-                if (TxtNewMap[i][j].toString() .equals("R") ){
+                if (TxtNewMap[i][j].toString().equals("R")) {
                     txtMark++;
                 }
 
-                if (TxtNewMap[i][j].toString().equals("R") && !TSKMap[i][j].toString() .equals(".")) {
+                if (TxtNewMap[i][j].toString().equals("R") && !TSKMap[i][j].toString().equals(".")) {
 //                    if (MessageBox.Show("对位点不正确!", "确认", MessageBoxButtons.YesNo) == DialogResult.Yes)
 //                    {
 //                        Environment.Exit(0);
 //                    }
+                    // TODO
                     System.out.println("error and quit");
 
                 }
@@ -569,19 +565,16 @@ public class TSKParse {
     }
 
 
-    public void createNewTSK(TxtParse txtParse) {
+    public void createNewTSK(TxtParse txtParse, String retTskUrl, String slotNo) {
         //------------------------------根据SINF生成新的TSK-MAP----------------------------//
 
-        String fileName = "binaryfile.bin"; // 指定要创建的二进制文件的名称
-
-
+        String fileName = retTskUrl+File.separator+"binaryfile.bin"; // 指定要创建的二进制文件的名称
 /////--------------------Map版本为2，且无扩展信息TSK修改BIN信息代码-------------------////
 //        if ((arry_1.Count == 0) && ((Convert.ToInt32(MapVersion_1) == 2)))
 //        {
         for (int k = 0; k < mapDataAreaRowSize * mapDataAreaColSize; k++) {
             if (Objects.equals(txtParse.txtNewData.get(k).toString(), "."))//Skip Die
             {
-                System.out.println("aaa");
                 continue;
 
             } else {
@@ -728,8 +721,8 @@ public class TSKParse {
             //TODO
             bw.writeShort(this.cassetteNo);
 ////SN
-//            //Slot NO TODO 传参进去
-            bw.writeShort(this.slotNo);
+//            //Slot NO
+            bw.writeShort(Integer.parseInt(slotNo));
 ////Idex
             bw.write(this.XCoordinatesIncreaseDirection);
 ////Idey
