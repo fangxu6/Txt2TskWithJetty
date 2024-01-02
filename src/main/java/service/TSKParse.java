@@ -24,82 +24,86 @@ import java.util.Objects;
  */
 @Service
 public class TSKParse {
-    private String operatorName;//0
-    private String deviceName;//20
-    private Short waferSize;//36 2
-    private byte[] machineNo;//38 2
-    private Integer XIndexingSize;//40 4
-    private Integer YIndexingSize;//44 4
-    private Short orientationFlatAngle;//48 2
+    //20 bits
+    private String operatorName;
+    //16 bits
+    private String deviceName;
+    private Short waferSize;
+    private byte[] machineNo;
+    private Integer XIndexingSize;
+    private Integer YIndexingSize;
+    private Short orientationFlatAngle;
     private String orientationFlatAngleName;
-    private byte finalEditingMachineType;//50 1
-    private byte mapVersion;//51 1
-    private Integer mapDataAreaRowSize; //52 2
-    private Integer mapDataAreaColSize;// 54 2
-    private Integer mapDataForm;// 56 4
-    private String waferId;// 60 21
-    private byte nemberOfProbing;// 81 1
-    private String lotNo;//82 18  need
-    private Short cassetteNo;//100 2
-    private Short slotNo;//102 2
-    private byte XCoordinatesIncreaseDirection;//104 1
-    private byte YCoordinatesIncreaseDirection;//105 1
-    private byte refeDir;//106 1
-    private byte reserved0;//107 1
-    private int targetX;//108 4
-    private int targetY;//112 4
-    private short refpx;//116 2
-    private short refpy;//118 2
-    private byte probingSP;//120 1
-    private byte probingDir;//121 1
-    private short reserved1;//122 2
-    private int distanceX;//124 4
-    private int distanceY;//128 4
-    private int coordinatorX;//132 4
-    private int coordinatorY;//136 4
-    private int firstDirX;//140 4
-    private int firstDirY;//144 4
+    private byte finalEditingMachineType;
+    private byte mapVersion;
+    private Integer mapDataAreaRowSize;
+    private Integer mapDataAreaColSize;
+    private Integer mapDataForm;
+    //21 bits
+    private String waferId;
+    private byte nemberOfProbing;
+    //18 bits
+    private String lotNo;
+    private Short cassetteNo;
+    private Short slotNo;
+    private byte XCoordinatesIncreaseDirection;
+    private byte YCoordinatesIncreaseDirection;
+    private byte refeDir;
+    private byte reserved0;
+    private int targetX;
+    private int targetY;
+    private short refpx;
+    private short refpy;
+    private byte probingSP;
+    private byte probingDir;
+    private short reserved1;
+    private int distanceX;
+    private int distanceY;
+    private int coordinatorX;
+    private int coordinatorY;
+    private int firstDirX;
+    private int firstDirY;
 
-    private String startYear;//148 2
-    private String startMonth;//150 2
-    private String startDay;//152 2
-    private String startHour;//154 2
-    private String startMinute;//156 2
-    private String startTimeReserved;//158 2
-    private String endYear;//160 2
-    private String endMonth;//162 2
-    private String endDay;//164 2
-    private String endHour;//166 2
-    private String endMinute;//168 2
-    private String endTimeReserved;//170 2
-    private String loadYear;//172 2
-    private String loadMonth;//174 2
-    private String loadDay;//176 2
-    private String loadHour;//178 2
-    private String loadMinute;//180 2
-    private String loadTimeReserved;//182 2
-    private String unloadYear;//184 2
-    private String unloadMonth;//186 2
-    private String unloadDay;//188 2
-    private String unloadHour;//190 2
-    private String unloadMinute;//192 2
-    private String unloadTimeReserved;//194 2
-    private int machineNo1;//196 4
-    private int machineNo2;//200 4
-    private int specialChar;//204 4
-    private byte testingEnd;//208 1
-    private byte reserved2;//209 1
-    private Short totalTestedDice;//210 2
-    private Short totalPassDice;//212 2
-    private Short totalFailDice;//214 2
+    private String startYear;
+    private String startMonth;
+    private String startDay;
+    private String startHour;
+    private String startMinute;
+    private String startTimeReserved;
+    private String endYear;
+    private String endMonth;
+    private String endDay;
+    private String endHour;
+    private String endMinute;
+    private String endTimeReserved;
+    private String loadYear;
+    private String loadMonth;
+    private String loadDay;
+    private String loadHour;
+    private String loadMinute;
+    private String loadTimeReserved;
+    private String unloadYear;
+    private String unloadMonth;
+    private String unloadDay;
+    private String unloadHour;
+    private String unloadMinute;
+    private String unloadTimeReserved;
+    private int machineNo1;
+    private int machineNo2;
+    private int specialChar;
+    private byte testingEnd;
+    private byte reserved2;
+    private Short totalTestedDice;
+    private Short totalPassDice;
+    private Short totalFailDice;
     // 记录 die 测试数据起始指针
-    private int dieSP;//216 4
-    private int lineCategoryNo;//220 4
-    private int lineCategoryAddr;//224 4
-    private short configuration;//228 2
-    private short maxMultiSite;//230 2
-    private short maxCategories;//232 2
-    private short reserved3;//234 2
+    private int dieSP;
+    private int lineCategoryNo;
+    private int lineCategoryAddr;
+    private short configuration;
+    private short maxMultiSite;
+    private short maxCategories;
+    private short reserved3;
     private List<WaferMapData> waferMapDataList = new ArrayList<>();
 
     private byte[] bufferhead1_20 = new byte[20];
@@ -110,66 +114,27 @@ public class TSKParse {
     private byte[] bufferhead3_44 = new byte[44];
     private byte[] bufferhead4_64 = new byte[64];
 
+    //die的First Word
     List arryfirstbyte1_1 = new ArrayList<Byte>();
     List arryfirstbyte2_1 = new ArrayList<Byte>();
+    //die的Second Word
     List arrysecondbyte1_1 = new ArrayList<Byte>();
     List arrysecondbyte2_1 = new ArrayList<Byte>();
+    //die的Second Word
     List arrythirdbyte1_1 = new ArrayList<Byte>();
     List arrythirdbyte2_1 = new ArrayList<Byte>();
 
     Byte[] firstbyte1_1;
     Byte[] firstbyte2_1;
-    ;
     Byte[] secondbyte1_1;
     Byte[] secondbyte2_1;
-    ;
     Byte[] thirdbyte1_1;
     Byte[] thirdbyte2_1;
-
-    public Short getTotalTestedDice() {
-        return totalTestedDice;
-    }
-
-    public Short getTotalPassDice() {
-        return totalPassDice;
-    }
-
-    public Short getTotalFailDice() {
-        return totalFailDice;
-    }
-
-    public String getLotNo() {
-        return lotNo;
-    }
-
-    public List<WaferMapData> getWaferMapDataList() {
-        return waferMapDataList;
-    }
-
-    public String getWaferId() {
-        return waferId;
-    }
-
-    public String getStartTime() {
-        return String.join("-", "20" + startYear, startMonth, startDay) + " " + String.join(":", startHour, startMinute, "00");
-    }
-
-    public String getEndTime() {
-        return String.join("-", "20" + endYear, endMonth, endDay) + " " + String.join(":", endHour, endMinute, "00");
-    }
-
-
-    public Short getOrientationFlatAngle() {
-        return orientationFlatAngle;
-    }
-
-    public String getOrientationFlatAngleName() {
-        return orientationFlatAngleName;
-    }
 
     public TSKParse read(String file) {
         byte[] bytes = new byte[1024];
         try (DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
+            //解析tsk head info
             dis.read(bytes, 0, 20);
             operatorName = new String(bytes).substring(0, 20).trim();
             dis.read(bytes, 0, 16);
@@ -180,7 +145,6 @@ public class TSKParse {
             dis.read(bytes, 0, 2);
             machineNo = new byte[2];
             System.arraycopy(bytes, 0, machineNo, 0, 2);
-//            dis.readFully(bytes, 0, 4);
             XIndexingSize = dis.readInt();
             YIndexingSize = dis.readInt();
 
@@ -197,13 +161,10 @@ public class TSKParse {
             mapDataAreaRowSize = dis.readUnsignedShort();// 记录行数
             mapDataAreaColSize = dis.readUnsignedShort();// 记录列数
 
-//            dis.read(bytes, 0, 4);
             mapDataForm = dis.readInt();
-//            mapDataForm = new String(bytes).substring(0, 16).trim();
 
             dis.read(bytes, 0, 21);
             waferId = new String(bytes).substring(0, 21).trim();
-//            dis.read(bytes, 0, 1);
             nemberOfProbing = dis.readByte();
             dis.read(bytes, 0, 18);
             lotNo = new String(bytes).substring(0, 18).trim();
@@ -289,7 +250,7 @@ public class TSKParse {
             totalTestedDice = dis.readShort();
             totalPassDice = dis.readShort();
             totalFailDice = dis.readShort();
-            //216 236
+
             dieSP = dis.readInt();
             lineCategoryNo = dis.readInt();
             lineCategoryAddr = dis.readInt();
@@ -301,6 +262,7 @@ public class TSKParse {
 
             int sumDie = mapDataAreaRowSize * mapDataAreaColSize;
 
+            //解析每颗die
             for (int i = 0; i < sumDie; i++) {
                 waferMapDataList.add(readDie(dis));
             }
@@ -327,7 +289,7 @@ public class TSKParse {
     }
 
     private WaferMapData readDie(DataInputStream dis) throws IOException {
-//FirstWord
+        //FirstWord
         byte byte1 = dis.readByte();
         byte byte2 = dis.readByte();
         int XCord = (byte1 & 0x01) << 8 | byte2 & 0xff;
@@ -437,7 +399,6 @@ public class TSKParse {
                     tskrowmin = i;
                     flag = 1;
                     break;
-
                 }
             }
             if (flag == 1) {
@@ -452,13 +413,10 @@ public class TSKParse {
                     tskrowmax = i;
                     flag = 1;
                     break;
-
                 }
-
             }
             if (flag == 1) {
                 break;
-
             }
         }
 
@@ -468,7 +426,6 @@ public class TSKParse {
                 if ((TSKMap[j][i].toString() != ".")) {
                     tskcolmin = i;
                     flag = 1;
-
                 }
 
             }
@@ -483,7 +440,6 @@ public class TSKParse {
                 if ((TSKMap[j][i].toString() != ".")) {
                     tskcolmax = i;
                     flag = 1;
-
                 }
 
             }
@@ -495,7 +451,6 @@ public class TSKParse {
         Object[][] TxtNewMap = new Object[mapDataAreaColSize][mapDataAreaRowSize];
         for (int i = 0; i < mapDataAreaColSize; i++) {
             for (int j = 0; j < mapDataAreaRowSize; j++) {
-
                 TxtNewMap[i][j] = ".";
             }
         }
@@ -515,13 +470,11 @@ public class TSKParse {
 
         for (int i = 0; i < mapDataAreaColSize; i++) {
             for (int j = 0; j < mapDataAreaRowSize; j++) {
-
                 txtParse.txtNewData.add(TxtNewMap[i][j].toString());
-
             }
         }
-        ///////////////////////////对位点比对工作//////////////////////////////////////////////////
 
+        ///////////////////////////对位点比对工作//////////////////////////////////////////////////
         int tskPass = 0;
         int tskFail = 0;
         int txtMark = 0;
@@ -540,13 +493,7 @@ public class TSKParse {
                 }
 
                 if (TxtNewMap[i][j].toString().equals("R") && !TSKMap[i][j].toString().equals(".")) {
-//                    if (MessageBox.Show("对位点不正确!", "确认", MessageBoxButtons.YesNo) == DialogResult.Yes)
-//                    {
-//                        Environment.Exit(0);
-//                    }
-                    // TODO
-                    System.out.println("error and quit");
-
+                    throw new CustomException("ERR-002", "对位点不匹配");
                 }
 
             }
@@ -555,12 +502,7 @@ public class TSKParse {
 //////////////////////////////PASS数比对///////////////////////////////////////
 
         if ((txtParse.txtPass + txtParse.txtFail) != (tskPass + tskFail)) {
-
-//            if (MessageBox.Show("总颗数不匹配!", "确认", MessageBoxButtons.YesNo) == DialogResult.Yes)
-//            {
-//                Environment.Exit(0);
-//            }
-            System.out.println("error and quit");
+            throw new CustomException("ERR-003", "总颗数不匹配!");
         }
     }
 
@@ -568,7 +510,7 @@ public class TSKParse {
     public void createNewTSK(TxtParse txtParse, String retTskUrl, String slotNo) {
         //------------------------------根据SINF生成新的TSK-MAP----------------------------//
 
-        String fileName = retTskUrl+File.separator+"binaryfile.bin"; // 指定要创建的二进制文件的名称
+        String fileName = retTskUrl + File.separator + txtParse.txtWaferID; // 指定要创建的二进制文件的名称
 /////--------------------Map版本为2，且无扩展信息TSK修改BIN信息代码-------------------////
 //        if ((arry_1.Count == 0) && ((Convert.ToInt32(MapVersion_1) == 2)))
 //        {

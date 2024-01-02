@@ -19,8 +19,6 @@ import java.util.List;
 public class TxtParse {
     int txtPass = 0;
     int txtFail = 0;
-    int tskPass = 0;
-    int tskFail = 0;
     List txtData;
     List degTxtData = new ArrayList();
     List txtNewData;
@@ -35,8 +33,6 @@ public class TxtParse {
     int txtRowct = 0;
     int txtColct = 0;
 
-    int txtMark = 0;
-
 
     public TxtParse read(String file) {
         if (this.txtData == null) {
@@ -50,24 +46,19 @@ public class TxtParse {
 
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                // 处理每一行文本内容，例如打印到控制台
-                System.out.println(line);
+                // 处理每一行文本内容
                 this.Parse(line);
             }
 
-
+            //解析txt文件获得图谱的行数和列数
             if (txtRowct > 0 && txtColct > 0) {
-
-
             } else {
                 // MessageBox.Show("SINF格式不正确!");
 //                if (MessageBox.Show("TXT格式不正确!", "确认", MessageBoxButtons.YesNo) == DialogResult.Yes) {
 //                    Environment.Exit(0);
 //                }
                 System.out.println("error");
-
             }
-
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -109,7 +100,6 @@ public class TxtParse {
                     case "Fail Die":
                         this.txtFail = Integer.valueOf(strs[1].trim());
                         break;
-
                 }
             } else {
                 this.ParseDies(line);
@@ -123,9 +113,9 @@ public class TxtParse {
         for (int i = 0; i < s.length(); i++) {
             txtData.add(s.charAt(i));
         }
-
     }
 
+    // txt图谱翻转，和tsk图谱一致
     public void rotate(int degree) {
         int count = txtColct * txtRowct;
 
@@ -133,18 +123,14 @@ public class TxtParse {
             degTxtData.add(".");
         }
 
-
-        if (degree == 0)////TXT转180
+        if (degree == 180)
         {
-
             int x = -1, y = -1, xr = -1, yr = -1;
 
             for (int i = 0; i < count; i++) {
                 try {
                     // 计算 x,y 坐标
-                    // x = i % this._xmax;
                     x = i % txtColct;
-                    // y = i / this._xmax;
                     y = i / txtColct;
 
                     xr = (txtColct) - 1 - x;
@@ -159,7 +145,6 @@ public class TxtParse {
 
         } else if (degree == 90)////TXT转270
         {
-
             int x = -1, y = -1, xr = -1, yr = -1;
 
             for (int i = 0; i < count; i++) {
@@ -177,7 +162,6 @@ public class TxtParse {
             x = txtColct;
             txtColct = txtRowct;
             txtRowct = x;
-
         } else if (degree == 270)////TXT转90
         {
 
@@ -197,29 +181,20 @@ public class TxtParse {
             x = txtColct;
             txtColct = txtRowct;
             txtRowct = x;
-
-        } else if (degree == 180)////TXT不转角度
+        } else if (degree == 0)////TXT不转角度
         {
-
             for (int i = 0; i < count; i++) {
 
                 degTxtData.set(i, txtData.get(i));
             }
-            System.out.println(txtData.get(49));
-
         }
 
         this.TxtMap = new Object[this.txtRowct][this.txtColct];
 
         for (int i = 0; i < this.txtRowct; i++) {
             for (int j = 0; j < this.txtColct; j++) {
-
                 this.TxtMap[i][j] = degTxtData.get(j + i * txtColct);
-
             }
-
         }
-        System.out.println(this.TxtMap[0][0]);
-
     }
 }

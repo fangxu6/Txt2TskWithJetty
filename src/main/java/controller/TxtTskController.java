@@ -40,10 +40,15 @@ public class TxtTskController {
             @RequestParam("tskUrl") String tskUrl,
             @RequestParam("retTskUrl") String retTskUrl,
             @RequestParam("slotNo") String slotNo) {
+        //tsk文件解析
         TSKParse tskData = tskParse.read(tskUrl);
+        //txt文件解析
         TxtParse txtData = txtParse.read(txtUrl);
+        //txt图谱旋转角度 TODO
         txtParse.rotate(0);
+        //txt图谱补全和校验
         tskData.buBian(txtData);
+        //生成新的tsk文件
         tskData.createNewTSK(txtData,retTskUrl,slotNo);
 
 
