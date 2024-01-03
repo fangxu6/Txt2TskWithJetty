@@ -9,7 +9,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -566,7 +570,7 @@ public class TSKParse {
 
 //----------------------------TSK修改BIN信息-----------------------------------------------------
 
-        try (DataOutputStream bw = new DataOutputStream(new FileOutputStream(fileName))) {
+        try (DataOutputStream bw = new DataOutputStream(Files.newOutputStream(Paths.get(fileName)))) {
 
             System.out.println("Binary file created and data written successfully.");
             String str = String.format("%-20s", this.operatorName);
@@ -586,7 +590,6 @@ public class TSKParse {
 //IndexSizeY
             bw.writeInt(this.YIndexingSize);
 //FlatDir
-            // TODO
 //            this.Reverse(ref FlatDir_1);
             bw.writeShort(this.orientationFlatAngle);
 //MachineType
@@ -594,30 +597,25 @@ public class TSKParse {
 //MapVersion
             bw.write(mapVersion);
 //Row
-            //todo
             bw.writeShort(mapDataAreaRowSize);
-//            bw.write(mapDataAreaRowSize[0]);
 //Col
             bw.writeShort(mapDataAreaColSize);
-//            bw.write(col_1[0]);
 //MapDataForm
             bw.writeInt(mapDataForm);
-
 //NewWaferID
-            str = String.format("%-21s", this.waferId);
+            str = String.format("%-21s", txtParse.txtWaferID);
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 21);
 //ProbingNo
             bw.write(nemberOfProbing);
 
 //NewLotNo
-            str = String.format("%-18s", this.lotNo);
+            str = String.format("%-18s", txtParse.txtLot);
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 18);
 
-            //TODO
             bw.writeShort(this.cassetteNo);
 ////SN
 //            //Slot NO
-            bw.writeShort(Integer.parseInt(slotNo));
+            bw.writeShort(Short.parseShort(slotNo));
 ////Idex
             bw.write(this.XCoordinatesIncreaseDirection);
 ////Idey
@@ -725,22 +723,13 @@ public class TSKParse {
             bw.write(testingEnd);
 ////Reserved3
             bw.write(reserved2);
-////Totaldice
-////buf = BitConverter.GetBytes((short)(tskFail+tskPass));-----20221128
-//            buf = BitConverter.GetBytes((short) (tskFail));
-//            this.Reverse(ref buf);
-//            bw.write(buf, 0, 2);
-            bw.writeShort(txtParse.txtPass + txtParse.txtFail);
-////TotalPdice
-//// bw.write(TotalPdice_1);
-//            buf = BitConverter.GetBytes((short) (0));
-//            this.Reverse(ref buf);
+////TotalDice
+            short totalDice = (short) (txtParse.txtPass + txtParse.txtFail);
+            bw.writeShort(totalDice);
+////TotalPassDice
+            bw.writeShort(0);
+////TotalFailDice
             bw.writeShort(txtParse.txtFail);
-////TotalFdice
-//            buf = BitConverter.GetBytes((short) (tskFail));
-//            this.Reverse(ref buf);
-            bw.writeShort(txtParse.txtPass);
-//// bw.write(TotalFdice_1);
 ////DIAdress
             bw.writeInt(dieSP);
 ////Numbercategory
@@ -770,9 +759,13 @@ public class TSKParse {
             bw.write(bufferhead2_32);
 // buf = BitConverter.GetBytes((int)(tskFail + tskPass));////不能写total
 
-            bw.writeInt(bufferhead_total);
-            bw.writeInt(bufferhead_pass);
-            bw.writeInt(bufferhead_fail);
+            //Total、pass、fail dies
+//            bw.write(int2bytes((int) (txtParse.txtPass + txtParse.txtFail), ByteOrder.BIG_ENDIAN),0,4);
+//            bw.write(int2bytes(0, ByteOrder.BIG_ENDIAN),0,4);
+//            bw.write(int2bytes((int) (txtParse.txtFail), ByteOrder.BIG_ENDIAN),0,4);
+            bw.writeInt(txtParse.txtPass + txtParse.txtFail);
+            bw.writeInt(0);
+            bw.writeInt(txtParse.txtFail);
 
             bw.write(bufferhead3_44);
             bw.write(bufferhead4_64);
@@ -793,5 +786,11 @@ public class TSKParse {
 //        if (MessageBox.Show("转换成功，是否打开?", "确定", MessageBoxButtons.YesNo) == DialogResult.Yes) {
 //            Process.Start("D:\\MERGE\\");
 //        }
+    }
+    public static byte[] int2bytes(int intVal, ByteOrder byteOrder) {
+        ByteBuffer buffer = ByteBuffer.allocate(4);
+        buffer.order(byteOrder);
+        buffer.asIntBuffer().put(intVal);
+        return buffer.array();
     }
 }
