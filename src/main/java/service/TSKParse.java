@@ -532,7 +532,7 @@ public class TSKParse {
         //------------------------------根据SINF生成新的TSK-MAP----------------------------//
 
         String fileName = retTskUrl + File.separator + txtParse.txtWaferID;
-///--------------------Map版本为2，且无扩展信息TSK修改BIN信息代码-------------------////
+        //--------------------Map版本为2，且无扩展信息TSK修改BIN信息代码-------------------//
         if (mapVersion == 2) {
             for (int k = 0; k < mapDataAreaRowSize * mapDataAreaColSize; k++) {
                 if (Objects.equals(txtParse.txtNewData.get(k).toString(), "."))//Skip Die
@@ -567,9 +567,7 @@ public class TSKParse {
             }
         }
 
-
-//----------------------------TSK修改BIN信息-----------------------------------------------------
-
+        //----------------------------TSK修改BIN信息-----------------------------------------------------
         try (DataOutputStream bw = new DataOutputStream(Files.newOutputStream(Paths.get(fileName)))) {
 
             System.out.println("Binary file created and data written successfully.");
@@ -579,80 +577,77 @@ public class TSKParse {
             str = String.format("%-16s", this.deviceName);
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 16);
 
-            byte[] buf;
-//WaferSize
+            //WaferSize
             bw.writeShort(this.waferSize);
-//MachineNo
-//            str = String.format("%-2s", this.machineNo);
+            //MachineNo
             bw.write(this.machineNo);
-//IndexSizeX
+            //IndexSizeX
             bw.writeInt(this.XIndexingSize);
-//IndexSizeY
+            //IndexSizeY
             bw.writeInt(this.YIndexingSize);
-//FlatDir
-//            this.Reverse(ref FlatDir_1);
+            //FlatDir
             bw.writeShort(this.orientationFlatAngle);
-//MachineType
+            //MachineType
             bw.write(finalEditingMachineType);
-//MapVersion
+            //MapVersion
             bw.write(mapVersion);
-//Row
+            //Row
             bw.writeShort(mapDataAreaRowSize);
-//Col
+            //Col
             bw.writeShort(mapDataAreaColSize);
-//MapDataForm
+            //MapDataForm
             bw.writeInt(mapDataForm);
-//NewWaferID
+            //NewWaferID
             str = String.format("%-21s", txtParse.txtWaferID);
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 21);
-//ProbingNo
+            //ProbingNo
             bw.write(nemberOfProbing);
 
-//NewLotNo
+            //NewLotNo
             str = String.format("%-18s", txtParse.txtLot);
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 18);
 
             bw.writeShort(this.cassetteNo);
-////SN
-//            //Slot NO
+            //SN
+            //Slot NO
             bw.writeShort(Short.parseShort(slotNo));
-////Idex
+            //Idex
             bw.write(this.XCoordinatesIncreaseDirection);
-////Idey
+            //Idey
             bw.write(this.YCoordinatesIncreaseDirection);
-////Rdsp
+            //Rdsp
             bw.write(this.refeDir);
-////Reserved1
+            //Reserved1
             bw.write(this.reserved0);
-////Tdpx
+            //Tdpx
             bw.writeInt(this.targetX);
-////Tdpy
+            //Tdpy
             bw.writeInt(this.targetY);
-//
-////Rdcx
+
+            //Rdcx
             bw.writeShort(this.refpx);
-////Rdcy
+            //Rdcy
             bw.writeShort(this.refpy);
-////Psps
+            //Psps
             bw.write(this.probingSP);
-////Pds
+            //Pds
             bw.write(this.probingDir);
-////Reserved2
+            //Reserved2
             bw.writeShort(this.reserved1);
-////DistanceX
+            //DistanceX
             bw.writeInt(this.distanceX);
-////DistanceY
+            //DistanceY
             bw.writeInt(this.distanceY);
-//
-////CoordinatorX
+
+            //CoordinatorX
             bw.writeInt(coordinatorX);
-////CoordinatorY
+            //CoordinatorY
             bw.writeInt(coordinatorY);
-////Fdcx
+            //Fdcx
             bw.writeInt(firstDirX);
-////Fdxy
+            //Fdxy
             bw.writeInt(firstDirY);
-////WTSTIME
+            //WTSTIME
             str = String.format("%-2s", this.startYear);
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 2);
             str = String.format("%-2s", this.startMonth);
@@ -665,9 +660,8 @@ public class TSKParse {
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 2);
             str = String.format("%-2s", this.startTimeReserved);
             bw.write(new byte[2]);
-//            bw.write(str.getBytes(StandardCharsets.US_ASCII),0,2);
 
-            ////WTETIME
+            //WTETIME
             str = String.format("%-2s", this.endYear);
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 2);
             str = String.format("%-2s", this.endMonth);
@@ -680,9 +674,8 @@ public class TSKParse {
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 2);
             str = String.format("%-2s", this.endTimeReserved);
             bw.write(new byte[2]);
-//            bw.write(str.getBytes(StandardCharsets.US_ASCII),0,2);
 
-////WLTIME
+            //WLTIME
             str = String.format("%-2s", this.loadYear);
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 2);
             str = String.format("%-2s", this.loadMonth);
@@ -695,8 +688,7 @@ public class TSKParse {
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 2);
             str = String.format("%-2s", this.loadTimeReserved);
             bw.write(new byte[2]);
-//            bw.write(str.getBytes(StandardCharsets.US_ASCII),0,2);
-////WULT
+            //WULT
             str = String.format("%-2s", this.unloadYear);
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 2);
             str = String.format("%-2s", this.unloadMonth);
@@ -713,36 +705,36 @@ public class TSKParse {
             } else {
                 bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 2);
             }
-////MachineNo1
+            //MachineNo1
             bw.writeInt(this.machineNo1);
-////MachineNo2
+            //MachineNo2
             bw.writeInt(this.machineNo2);
-////Specialchar
+            //Specialchar
             bw.writeInt(specialChar);
-////TestEndInfo
+            //TestEndInfo
             bw.write(testingEnd);
-////Reserved3
+            //Reserved3
             bw.write(reserved2);
-////TotalDice
+            //TotalDice
             short totalDice = (short) (txtParse.txtPass + txtParse.txtFail);
             bw.writeShort(totalDice);
-////TotalPassDice
+            //TotalPassDice
             bw.writeShort(0);
-////TotalFailDice
+            //TotalFailDice
             bw.writeShort(txtParse.txtFail);
-////DIAdress
+            //DIAdress
             bw.writeInt(dieSP);
-////Numbercategory
+            //Numbercategory
             bw.writeInt(lineCategoryNo);
-////Linecategory
+            //Linecategory
             bw.writeInt(lineCategoryAddr);
-////mapconfig
+            //mapconfig
             bw.writeShort(configuration);
-////mmsite
+            //mmsite
             bw.writeShort(maxMultiSite);
-////mcategory
+            //mcategory
             bw.writeShort(maxCategories);
-////Reserved4
+            //Reserved4
             bw.writeShort(reserved3);
 
             for (int k = 0; k < mapDataAreaRowSize * mapDataAreaColSize; k++) {
@@ -757,7 +749,6 @@ public class TSKParse {
             }
             bw.write(bufferhead1_20);
             bw.write(bufferhead2_32);
-// buf = BitConverter.GetBytes((int)(tskFail + tskPass));////不能写total
 
             //Total、pass、fail dies
 //            bw.write(int2bytes((int) (txtParse.txtPass + txtParse.txtFail), ByteOrder.BIG_ENDIAN),0,4);
@@ -787,6 +778,7 @@ public class TSKParse {
 //            Process.Start("D:\\MERGE\\");
 //        }
     }
+
     public static byte[] int2bytes(int intVal, ByteOrder byteOrder) {
         ByteBuffer buffer = ByteBuffer.allocate(4);
         buffer.order(byteOrder);
