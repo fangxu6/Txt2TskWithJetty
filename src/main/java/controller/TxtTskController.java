@@ -44,8 +44,9 @@ public class TxtTskController {
         TSKParse tskData = tskParse.read(tskUrl);
         //txt文件解析
         TxtParse txtData = txtParse.read(txtUrl);
-        //txt图谱旋转角度 TODO
-        txtParse.rotate(0);
+        //txt图谱旋转角度
+        int degree = Integer.parseInt(txtData.getTxtFlat())-tskData.getOrientationFlatAngle();
+        txtParse.rotate(degree);
         //txt图谱补全和校验
         tskData.buBian(txtData);
         //生成新的tsk文件

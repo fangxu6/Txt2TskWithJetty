@@ -32,6 +32,8 @@ public class TSKParse {
     private byte[] machineNo;
     private Integer XIndexingSize;
     private Integer YIndexingSize;
+
+
     private Short orientationFlatAngle;
     private String orientationFlatAngleName;
     private byte finalEditingMachineType;
@@ -114,15 +116,17 @@ public class TSKParse {
     private byte[] bufferhead3_44 = new byte[44];
     private byte[] bufferhead4_64 = new byte[64];
 
+    List<Byte> extendResultPerDieList = new ArrayList<Byte>();
+
     //die的First Word
-    List arryfirstbyte1_1 = new ArrayList<Byte>();
-    List arryfirstbyte2_1 = new ArrayList<Byte>();
+    List<Byte> arryfirstbyte1_1 = new ArrayList<Byte>();
+    List<Byte> arryfirstbyte2_1 = new ArrayList<Byte>();
     //die的Second Word
-    List arrysecondbyte1_1 = new ArrayList<Byte>();
-    List arrysecondbyte2_1 = new ArrayList<Byte>();
+    List<Byte> arrysecondbyte1_1 = new ArrayList<Byte>();
+    List<Byte> arrysecondbyte2_1 = new ArrayList<Byte>();
     //die的Second Word
-    List arrythirdbyte1_1 = new ArrayList<Byte>();
-    List arrythirdbyte2_1 = new ArrayList<Byte>();
+    List<Byte> arrythirdbyte1_1 = new ArrayList<Byte>();
+    List<Byte> arrythirdbyte2_1 = new ArrayList<Byte>();
 
     Byte[] firstbyte1_1;
     Byte[] firstbyte2_1;
@@ -130,6 +134,10 @@ public class TSKParse {
     Byte[] secondbyte2_1;
     Byte[] thirdbyte1_1;
     Byte[] thirdbyte2_1;
+
+    public Short getOrientationFlatAngle() {
+        return orientationFlatAngle;
+    }
 
     public TSKParse read(String file) {
         byte[] bytes = new byte[1024];
@@ -280,6 +288,15 @@ public class TSKParse {
 
             dis.read(bytes, 0, 64);
             System.arraycopy(bytes, 0, bufferhead4_64, 0, 64);
+
+            byte buffer;
+            // 持续读取数据直到文件末尾
+            while (dis.available() > 0) {
+                // 处理读取到的数据，例如输出到控制台
+                buffer = dis.readByte();
+                extendResultPerDieList.add(buffer);
+            }
+
         } catch (FileNotFoundException e) {
             throw new CustomException("ERR-001", "file not found");
         } catch (IOException e) {
@@ -510,105 +527,41 @@ public class TSKParse {
     public void createNewTSK(TxtParse txtParse, String retTskUrl, String slotNo) {
         //------------------------------根据SINF生成新的TSK-MAP----------------------------//
 
-        String fileName = retTskUrl + File.separator + txtParse.txtWaferID; // 指定要创建的二进制文件的名称
-/////--------------------Map版本为2，且无扩展信息TSK修改BIN信息代码-------------------////
-//        if ((arry_1.Count == 0) && ((Convert.ToInt32(MapVersion_1) == 2)))
-//        {
-        for (int k = 0; k < mapDataAreaRowSize * mapDataAreaColSize; k++) {
-            if (Objects.equals(txtParse.txtNewData.get(k).toString(), "."))//Skip Die
-            {
-                continue;
-
-            } else {
-
-                if (Objects.equals(txtParse.txtNewData.get(k).toString(), "1"))//sinf =pass 不改
+        String fileName = retTskUrl + File.separator + txtParse.txtWaferID;
+///--------------------Map版本为2，且无扩展信息TSK修改BIN信息代码-------------------////
+        if (mapVersion == 2) {
+            for (int k = 0; k < mapDataAreaRowSize * mapDataAreaColSize; k++) {
+                if (Objects.equals(txtParse.txtNewData.get(k).toString(), "."))//Skip Die
                 {
-                    //  firstbyte1_1[k] = firstbyte1_1[k];
-                    //  firstbyte2_1[k] = firstbyte2_1[k];
-                    firstbyte1_1[k] = (byte) (firstbyte1_1[k] & 1);
-                    firstbyte1_1[k] = (byte) (firstbyte1_1[k] | 0);//标记成untested
-                    secondbyte1_1[k] = secondbyte1_1[k];
-                    secondbyte2_1[k] = secondbyte2_1[k];
-                    thirdbyte1_1[k] = thirdbyte1_1[k];
-                    thirdbyte2_1[k] = thirdbyte2_1[k];
-
-                }
-
-                if (Objects.equals(txtParse.txtNewData.get(k).toString(), "X"))//sinf fail,需要改为fail属性，BIN也需要改
-                {
-                    firstbyte1_1[k] = (byte) (firstbyte1_1[k] & 1);
-                    firstbyte1_1[k] = (byte) (firstbyte1_1[k] | 128);//标记成fail
-                    firstbyte2_1[k] = firstbyte2_1[k];
-                    secondbyte1_1[k] = secondbyte1_1[k];
-                    secondbyte2_1[k] = secondbyte2_1[k];
-                    thirdbyte1_1[k] = thirdbyte1_1[k];
-                    thirdbyte2_1[k] = (byte) (thirdbyte2_1[k] & 192);
-                    thirdbyte2_1[k] = (byte) (thirdbyte2_1[k] | 57);//换成想要的BIN58
-
+                    continue;
+                } else {
+                    if (Objects.equals(txtParse.txtNewData.get(k).toString(), "1"))//sinf =pass 不改
+                    {
+                        //  firstbyte1_1[k] = firstbyte1_1[k];
+                        //  firstbyte2_1[k] = firstbyte2_1[k];
+                        firstbyte1_1[k] = (byte) (firstbyte1_1[k] & 1);
+                        firstbyte1_1[k] = (byte) (firstbyte1_1[k] | 0);//标记成untested
+                        secondbyte1_1[k] = secondbyte1_1[k];
+                        secondbyte2_1[k] = secondbyte2_1[k];
+                        thirdbyte1_1[k] = thirdbyte1_1[k];
+                        thirdbyte2_1[k] = thirdbyte2_1[k];
+                    }
+                    if (Objects.equals(txtParse.txtNewData.get(k).toString(), "X"))//sinf fail,需要改为fail属性，BIN也需要改
+                    {
+                        firstbyte1_1[k] = (byte) (firstbyte1_1[k] & 1);
+                        firstbyte1_1[k] = (byte) (firstbyte1_1[k] | 128);//标记成fail
+                        firstbyte2_1[k] = firstbyte2_1[k];
+                        secondbyte1_1[k] = secondbyte1_1[k];
+                        secondbyte2_1[k] = secondbyte2_1[k];
+                        thirdbyte1_1[k] = thirdbyte1_1[k];
+                        thirdbyte2_1[k] = (byte) (thirdbyte2_1[k] & 192);
+                        thirdbyte2_1[k] = (byte) (thirdbyte2_1[k] | 57);//换成想要的BIN58
+                    }
                 }
 
 
             }
-
-
         }
-//        }
-//
-///////--------------------Map版本为2，且有扩展信息TSK修改BIN信息代码-------------------////
-//        if ((arry_1.Count > 0) && ((Convert.ToInt32(MapVersion_1) == 2)))
-//        {
-//            for (int k = 0; k < row1_1 * col1_1; k++)
-//            {
-//                if (txtNewData[k].ToString() == ".")//Skip Die
-//                {
-//                    continue;
-//
-//                }
-//
-//                else
-//                {
-//
-//                    if (txtNewData[k].ToString() == "1")//sinf =pass 不改
-//                    {
-//                        firstbyte1_1[k] = Convert.ToByte(firstbyte1_1[k] & 1);
-//                        firstbyte1_1[k] = Convert.ToByte(firstbyte1_1[k] | 0);//标记成untested
-//
-//                        arry_1[4 * k] = arry_1[4 * k];
-//                        arry_1[4 * k + 1] = arry_1[4 * k + 1];
-//                        arry_1[4 * k + 2] = arry_1[4 * k + 2];
-//                        arry_1[4 * k + 3] = arry_1[4 * k + 3];
-//                    }
-//
-//                    if (txtNewData[k].ToString() == "X")//sinf fail,需要改为fail属性，BIN也需要改
-//                    {
-//                        firstbyte1_1[k] = Convert.ToByte(firstbyte1_1[k] & 1);
-//                        firstbyte1_1[k] = Convert.ToByte(firstbyte1_1[k] | 128);//标记成fail
-//
-//                        thirdbyte1_1[k] = thirdbyte1_1[k];
-//                        thirdbyte2_1[k] = Convert.ToByte(thirdbyte2_1[k] & 192);
-//                        thirdbyte2_1[k] = Convert.ToByte(thirdbyte2_1[k] | 57);//换成想要的BIN58
-//
-//
-//                        arry_1[4 * k] = arry_1[4 * k];//sitenum
-//                        // arry_1[4 * k + 1] = arry_1[4 * k + 1];//cate
-//                        arry_1[4 * k + 1] = Convert.ToByte(Convert.ToByte(arry_1[4 * k + 1]) & 192);
-//                        arry_1[4 * k + 1] = Convert.ToByte(Convert.ToByte(arry_1[4 * k + 1]) | 57);//换成想要的BIN58
-//
-//
-//                        arry_1[4 * k + 2] = arry_1[4 * k + 2];
-//                        arry_1[4 * k + 3] = arry_1[4 * k + 3];
-//
-//                    }
-//
-//
-//
-//                }
-//
-//
-//            }
-//        }
-//
-//
 
 
 //----------------------------TSK修改BIN信息-----------------------------------------------------
@@ -825,12 +778,10 @@ public class TSKParse {
             bw.write(bufferhead4_64);
 
 
-//////扩展信息 mapversion2.3//////////////////////////////////
-//            foreach( byte obj in arry_1)
-//            {
-//                bw.write(obj);
-//
-//            }
+////扩展信息 mapversion2.3//////////////////////////////////
+            for (Byte buffer : extendResultPerDieList) {
+                bw.write(buffer);
+            }
 
 
         } catch (IOException e) {

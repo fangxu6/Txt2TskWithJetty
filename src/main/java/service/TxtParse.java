@@ -29,10 +29,16 @@ public class TxtParse {
     String txtLot;
     int txtSlot;
     String txtWaferID;
+
+
+
     String txtFlat;
     int txtRowct = 0;
     int txtColct = 0;
 
+    public String getTxtFlat() {
+        return txtFlat;
+    }
 
     public TxtParse read(String file) {
         if (this.txtData == null) {
