@@ -41,8 +41,10 @@ public class TxtTskController {
             @RequestParam("retTskUrl") String retTskUrl,
             @RequestParam("slotNo") String slotNo) {
         //tsk文件解析
+        TSKParse tskParse = new TSKParse();
         TSKParse tskData = tskParse.read(tskUrl);
         //txt文件解析
+        TxtParse txtParse = new TxtParse();
         TxtParse txtData = txtParse.read(txtUrl);
         //txt图谱旋转角度
         int degree = Integer.parseInt(txtData.getTxtFlat())-tskData.getOrientationFlatAngle();

@@ -478,7 +478,6 @@ public class TSKParse {
 
         for (int i = tskrowmin; i < tskrowmax + 1; i++) {
             for (int j = tskcolmin; j < tskcolmax + 1; j++) {
-
                 TxtNewMap[i][j] = txtParse.TxtMap[i - tskrowmin][j - tskcolmin];
             }
         }
@@ -530,46 +529,42 @@ public class TSKParse {
 
     public void createNewTSK(TxtParse txtParse, String retTskUrl, String slotNo) {
         //------------------------------根据SINF生成新的TSK-MAP----------------------------//
+        final int binNo = 58;
+        Integer slot = Integer.valueOf(slotNo);
+        String fileName = retTskUrl + File.separator + String.format("%03d", slot) + "." + txtParse.txtWaferID;
 
-        String fileName = retTskUrl + File.separator + txtParse.txtWaferID;
-        //--------------------Map版本为2，且无扩展信息TSK修改BIN信息代码-------------------//
-        if (mapVersion == 2) {
-            for (int k = 0; k < mapDataAreaRowSize * mapDataAreaColSize; k++) {
-                if (Objects.equals(txtParse.txtNewData.get(k).toString(), "."))//Skip Die
+        for (int k = 0; k < mapDataAreaRowSize * mapDataAreaColSize; k++) {
+            if (Objects.equals(txtParse.txtNewData.get(k).toString(), "."))//Skip Die
+            {
+                continue;
+            } else {
+                if (Objects.equals(txtParse.txtNewData.get(k).toString(), "1"))//sinf =pass 不改
                 {
-                    continue;
-                } else {
-                    if (Objects.equals(txtParse.txtNewData.get(k).toString(), "1"))//sinf =pass 不改
-                    {
-                        //  firstbyte1_1[k] = firstbyte1_1[k];
-                        //  firstbyte2_1[k] = firstbyte2_1[k];
-                        firstbyte1_1[k] = (byte) (firstbyte1_1[k] & 1);
-                        firstbyte1_1[k] = (byte) (firstbyte1_1[k] | 0);//标记成untested
-                        secondbyte1_1[k] = secondbyte1_1[k];
-                        secondbyte2_1[k] = secondbyte2_1[k];
-                        thirdbyte1_1[k] = thirdbyte1_1[k];
-                        thirdbyte2_1[k] = thirdbyte2_1[k];
-                    }
-                    if (Objects.equals(txtParse.txtNewData.get(k).toString(), "X"))//sinf fail,需要改为fail属性，BIN也需要改
-                    {
-                        firstbyte1_1[k] = (byte) (firstbyte1_1[k] & 1);
-                        firstbyte1_1[k] = (byte) (firstbyte1_1[k] | 128);//标记成fail
-                        firstbyte2_1[k] = firstbyte2_1[k];
-                        secondbyte1_1[k] = secondbyte1_1[k];
-                        secondbyte2_1[k] = secondbyte2_1[k];
-                        thirdbyte1_1[k] = thirdbyte1_1[k];
-                        thirdbyte2_1[k] = (byte) (thirdbyte2_1[k] & 192);
-                        thirdbyte2_1[k] = (byte) (thirdbyte2_1[k] | 57);//换成想要的BIN58
-                    }
+                    //  firstbyte1_1[k] = firstbyte1_1[k];
+                    //  firstbyte2_1[k] = firstbyte2_1[k];
+                    firstbyte1_1[k] = (byte) (firstbyte1_1[k] & 1);
+                    firstbyte1_1[k] = (byte) (firstbyte1_1[k] | 0);//标记成untested
+                    secondbyte1_1[k] = secondbyte1_1[k];
+                    secondbyte2_1[k] = secondbyte2_1[k];
+                    thirdbyte1_1[k] = thirdbyte1_1[k];
+                    thirdbyte2_1[k] = thirdbyte2_1[k];
                 }
-
-
+                if (Objects.equals(txtParse.txtNewData.get(k).toString(), "X"))//sinf fail,需要改为fail属性，BIN也需要改
+                {
+                    firstbyte1_1[k] = (byte) (firstbyte1_1[k] & 1);
+                    firstbyte1_1[k] = (byte) (firstbyte1_1[k] | 128);//标记成fail
+                    firstbyte2_1[k] = firstbyte2_1[k];
+                    secondbyte1_1[k] = secondbyte1_1[k];
+                    secondbyte2_1[k] = secondbyte2_1[k];
+                    thirdbyte1_1[k] = thirdbyte1_1[k];
+                    thirdbyte2_1[k] = (byte) (thirdbyte2_1[k] & 192);
+                    thirdbyte2_1[k] = (byte) (thirdbyte2_1[k] | binNo);//换成想要的BIN58
+                }
             }
         }
 
         //----------------------------TSK修改BIN信息-----------------------------------------------------
         try (DataOutputStream bw = new DataOutputStream(Files.newOutputStream(Paths.get(fileName)))) {
-
             System.out.println("Binary file created and data written successfully.");
             String str = String.format("%-20s", this.operatorName);
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 20);
@@ -608,7 +603,6 @@ public class TSKParse {
             bw.write(str.getBytes(StandardCharsets.US_ASCII), 0, 18);
 
             bw.writeShort(this.cassetteNo);
-            //SN
             //Slot NO
             bw.writeShort(Short.parseShort(slotNo));
             //Idex
@@ -716,8 +710,7 @@ public class TSKParse {
             //Reserved3
             bw.write(reserved2);
             //TotalDice
-            short totalDice = (short) (txtParse.txtPass + txtParse.txtFail);
-            bw.writeShort(totalDice);
+            bw.writeShort(txtParse.txtPass + txtParse.txtFail);
             //TotalPassDice
             bw.writeShort(0);
             //TotalFailDice
@@ -744,16 +737,11 @@ public class TSKParse {
                 bw.write(secondbyte2_1[k]);
                 bw.write(thirdbyte1_1[k]);
                 bw.write(thirdbyte2_1[k]);
-
-
             }
             bw.write(bufferhead1_20);
             bw.write(bufferhead2_32);
 
             //Total、pass、fail dies
-//            bw.write(int2bytes((int) (txtParse.txtPass + txtParse.txtFail), ByteOrder.BIG_ENDIAN),0,4);
-//            bw.write(int2bytes(0, ByteOrder.BIG_ENDIAN),0,4);
-//            bw.write(int2bytes((int) (txtParse.txtFail), ByteOrder.BIG_ENDIAN),0,4);
             bw.writeInt(txtParse.txtPass + txtParse.txtFail);
             bw.writeInt(0);
             bw.writeInt(txtParse.txtFail);
@@ -762,21 +750,45 @@ public class TSKParse {
             bw.write(bufferhead4_64);
 
 
-////扩展信息 mapversion2.3//////////////////////////////////
-            for (Byte buffer : extendResultPerDieList) {
-                bw.write(buffer);
+            ///拓展信息
+            if (extendResultPerDieList.size() > 0) {
+                if (mapVersion == 2) {
+                    for (int k = 0; k < mapDataAreaRowSize * mapDataAreaColSize; k++) {
+                        bw.write(extendResultPerDieList.get(k));
+                        //fail Bin
+                        if ((firstbyte1_1[k] & 128) == 128) {
+                            bw.write((byte) binNo);
+                        } else {
+                            bw.write((byte) 0);
+                        }
+                        bw.write(extendResultPerDieList.get(k + 2));
+                        bw.write(extendResultPerDieList.get(k + 3));
+                    }
+                } else {
+                    for (int k = 0; k < mapDataAreaRowSize * mapDataAreaColSize; k++) {
+                        bw.write(extendResultPerDieList.get(k));
+                        bw.write(extendResultPerDieList.get(k + 1));
+                        bw.write(extendResultPerDieList.get(k + 2));
+                        //fail Bin
+                        if ((firstbyte1_1[k] & 128) == 128) {
+                            bw.write((byte) binNo);
+                        } else {
+                            bw.write((byte) 0);
+                        }
+                    }
+                }
+            }
+            //有额外的信息直接写入
+            if (extendResultPerDieList.size() - mapDataAreaRowSize * mapDataAreaColSize * 4 > 0) {
+                for (int k = mapDataAreaRowSize * mapDataAreaColSize * 4; k < extendResultPerDieList.size(); k++) {
+                    bw.write(extendResultPerDieList.get(k));
+                }
             }
 
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-//Operator Size20
-
-
-//        if (MessageBox.Show("转换成功，是否打开?", "确定", MessageBoxButtons.YesNo) == DialogResult.Yes) {
-//            Process.Start("D:\\MERGE\\");
-//        }
     }
 
     public static byte[] int2bytes(int intVal, ByteOrder byteOrder) {
